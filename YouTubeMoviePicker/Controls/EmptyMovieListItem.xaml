@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="YouTubeMoviePicker.Controls.EmptyMovieListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:YouTubeMoviePicker.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="467.697" d:DesignWidth="409.818">
+    <Grid Margin="5,2,5,2" >
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop x:Name="GradColor2" Color="#CC1D1D1D" Offset="0.281"/>
+                <GradientStop x:Name="GradColor" Color="#99272A2D" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="1" Margin="5">
+            <TextBlock x:Name="Title" Text="There are no movies yet!" FontSize="20" FontWeight="Bold" Foreground="White" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+            <TextBlock Text="Click on the settings icon in the top right to find guides to help get Setup!" TextWrapping="Wrap" Foreground="White" Margin="0,10,0,0" HorizontalAlignment="Center" Padding="0,0,20,0"/>
+            <TextBlock Text="You will need a few API keys and a webhook or two." Foreground="White" Padding="0,5,0,0" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock Text="Once your Youtube and OMdb api keys saved the 'Pick From Youtube' button will appear to the right of the Suggestion Box field. " Foreground="White" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow" Margin="0,15,0,0"/>
+            <TextBlock Text="You can now type in a Suggestion and press the Pick From Youtube button. After a moment we will get you a few movies to choose from! But you only get 5 of these a day so use them wisely!" Foreground="White" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow" Margin="0,15,0,0"/>
+            <TextBlock Text="But Dont Forget!" Foreground="White" FontSize="16" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow" Margin="0,15,0,0" FontWeight="Bold"/>
+            <TextBlock Text="Follow the guides in the settings for the webhooks to setup Movie posting. Choose the days you want and the time of your choosing and Make it so!" Foreground="White" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow" Margin="0,15,0,0"/>
+            <TextBlock Text="" Foreground="White" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow" Margin="0,15,0,0"/>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

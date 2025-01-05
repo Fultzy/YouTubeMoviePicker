@@ -20,7 +20,7 @@ YouTube Movie Picker is a WPF application that helps you manage and pick movies 
 
 ## installation 
 
-- Download the Youtube.MoviePicker2.Zip file Found in releases to the right -->
+- Download the Zip file by clicking [Here](https://github.com/Fultzy/YouTubeMoviePicker/releases/download/Initial/YouTube.MoviePicker2.zip) or by checking [Releases](https://github.com/Fultzy/YouTubeMoviePicker/releases) 
 - Extract the Zip file
 - Run YoutubeMoviePicker.exe
 - Follow the prompt to install .Net if it requires

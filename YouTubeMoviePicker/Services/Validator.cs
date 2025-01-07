@@ -81,7 +81,8 @@ public static class Validator
         {
             result = "Discord WebHook Must Contain 'https://discord.com/api/webhooks/' or 'https://discordapp.com/api/webhooks/'";
         }
-    https://discordapp.com/api/webhooks/1315158353470558269/N5HM_1CP3ED9uq8tA3Ff0edCTH3wauMeTtUT1MROgwHU4DFKN3eVnZ0XDm8dp2tGo93A
+
+        // to the loser that found my testing webhook, you're welcome. hope you had fun being racist to literally no one.
 
         if (webHook.Contains(' '))
         {

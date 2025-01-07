@@ -1,7 +1,5 @@
 # YouTube Movie Picker
 
-YouTube Movie Picker is a WPF application that helps you manage and pick movies from a list of unpicked movies. It integrates with OMdb and YouTube APIs to fetch movie details and allows you to post selected movies to Discord and Slack.
-
 ## Features
 
 - Automaticly post free daily movies found on YouTube to your Discord or Slack via a simple WebHook!

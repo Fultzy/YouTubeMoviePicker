@@ -57,20 +57,10 @@ namespace YouTubeMoviePicker.Models.Extensions
                 sb.Append($"\nAwards:  {movie.Awards}");
 
             // determine ratings
-            if (!string.IsNullOrEmpty(movie.Metascore) || !string.IsNullOrEmpty(movie.imdbRating) || !string.IsNullOrEmpty(movie.imdbVotes))
+            foreach (var rating in movie.Ratings ?? Enumerable.Empty<Rating>())
             {
-                sb.Append("\n");
+                sb.Append($"\n{rating.Source}:  {rating.Value}");
             }
-
-            if (!string.IsNullOrEmpty(movie.Metascore) && movie.Metascore != "N/A")
-                sb.Append($"Metascore: {movie.Metascore}/100     ");
-
-            if (!string.IsNullOrEmpty(movie.imdbRating) && movie.imdbRating != "N/A")
-                sb.Append($"IMdb Rating: {movie.imdbRating}/10 ");
-
-            if (!string.IsNullOrEmpty(movie.imdbVotes) && movie.imdbVotes != "N/A")
-                sb.Append($"- Votes {movie.imdbVotes}");
-
 
             sb.Append("\n"); // Separator 
 

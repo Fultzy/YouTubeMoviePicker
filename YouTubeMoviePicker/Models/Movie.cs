@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using YouTubeMoviePicker.Services;
+using YouTubeMoviePicker.Utility;
 
 namespace YouTubeMoviePicker.Models;
 public class Movie
@@ -28,6 +32,8 @@ public class Movie
     public string? imdbId { get; set; }
     public string? imdbRating { get; set; }
     public string? imdbVotes { get; set; }
+    public List<Rating>? Ratings { get; set; }
+
 
     // YouTube API properties
     public string? YTVideoId { get; set; }
@@ -38,25 +44,62 @@ public class Movie
     public string? YTVideoURL { get; set; }
     public string? YTVideoPublishedAt { get; set; }
 
-    internal void AddOMdbDetails(Movie movie)
+    public void AddOMdbDetails(JsonObject omdbObject)
     {
-        Genre = movie.Genre;
-        Year = movie.Year;
-        Released = movie.Released;
-        Plot = movie.Plot?.Replace('"', '`');
-        Poster = movie.Poster;
-        Rated = movie.Rated;
-        Runtime = movie.Runtime;
-        Director = movie.Director;
-        Actors = movie.Actors;
-        Writer = movie.Writer;
-        Awards = movie.Awards;
-        BoxOffice = movie.BoxOffice;
-        Production = movie.Production;
-        imdbId = movie.imdbId;
-        Metascore = movie.Metascore;
-        imdbRating = movie.imdbRating;
-        imdbVotes = movie.imdbVotes;
+        if (omdbObject == null) return;
+
+        FromJson.Object(omdbObject, "Genre", out string genreValue);
+        FromJson.Object(omdbObject, "Year", out string yearValue);
+        FromJson.Object(omdbObject, "Released", out string releasedValue);
+        FromJson.Object(omdbObject, "Plot", out string plotValue);
+        FromJson.Object(omdbObject, "Poster", out string posterValue);
+        FromJson.Object(omdbObject, "Rated", out string ratedValue);
+        FromJson.Object(omdbObject, "Runtime", out string runtimeValue);
+        FromJson.Object(omdbObject, "Director", out string directorValue);
+        FromJson.Object(omdbObject, "Actors", out string actorsValue);
+        FromJson.Object(omdbObject, "Writer", out string writerValue);
+        FromJson.Object(omdbObject, "Awards", out string awardsValue);
+        FromJson.Object(omdbObject, "BoxOffice", out string boxOfficeValue);
+        FromJson.Object(omdbObject, "Production", out string productionValue);
+        FromJson.Object(omdbObject, "imdbID", out string imdbIdValue);
+        FromJson.Object(omdbObject, "imdbRating", out string imdbRatingValue);
+        FromJson.Object(omdbObject, "imdbVotes", out string imdbVotesValue);
+        FromJson.Object(omdbObject, "Metascore", out string metascoreValue);
+
+        Genre = genreValue;
+        Year = yearValue;
+        Released = releasedValue;
+        Plot = plotValue;
+        Poster = posterValue;
+        Rated = ratedValue;
+        Runtime = runtimeValue;
+        Director = directorValue;
+        Actors = actorsValue;
+        Writer = writerValue;
+        Awards = awardsValue;
+        BoxOffice = boxOfficeValue;
+        Production = productionValue;
+        imdbId = imdbIdValue;
+        imdbRating = imdbRatingValue;
+        imdbVotes = imdbVotesValue;
+        Metascore = metascoreValue;
+
+        var ratingsArray = omdbObject["Ratings"]?.AsArray();
+        var ratings = new List<Rating>();
+        if (ratingsArray != null)
+        {
+            foreach (var ratingNode in ratingsArray)
+            {
+                var rating = new Rating
+                {
+                    Source = ratingNode["Source"]?.ToString(),
+                    Value = ratingNode["Value"]?.ToString()
+                };
+                if (rating.Source == "Internet Movie Database") rating.Source = "IMDb";
+                ratings.Add(rating);
+            }
+        }
+        Ratings = ratings;
     }
 
     public override string ToString()
@@ -87,4 +130,13 @@ public class Movie
 
         return sb.ToString();
     }
+
+    
+}
+
+
+public class Rating
+{
+    public string? Source { get; set; }
+    public string? Value { get; set; }
 }

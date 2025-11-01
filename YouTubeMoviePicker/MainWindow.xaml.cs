@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Security.AccessControl;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +20,7 @@ using YouTubeMoviePicker.Models;
 using YouTubeMoviePicker.Models.Extensions;
 using YouTubeMoviePicker.Properties;
 using YouTubeMoviePicker.Services;
+using YouTubeMoviePicker.Utility;
 
 namespace YouTubeMoviePicker;
 /// <summary>
@@ -57,7 +58,7 @@ public partial class MainWindow : Window
         if (MovieList.Dispatcher.CheckAccess())
         {
             ClearMovies();
-            DataService.Instance.LoadPosters();
+            //DataService.Instance.LoadPosters();
             DataService.Instance.LoadData();
             var index = 1;
 
@@ -254,7 +255,7 @@ public partial class MainWindow : Window
     }
 
     public Movie SelectedMovie { get; set; }
-    public void SetSelectedMovie(Movie movie)
+    public async void SetSelectedMovie(Movie movie)
     {
         if (movie == null) return;
         
@@ -270,59 +271,159 @@ public partial class MainWindow : Window
 
 
         // OMdb details
-        SelectedMovieGenre.Text = movie.Genre;
-        SelectedMovieReleaseDate.Text = "Release Date: " + movie.Released;
-        SelectedMovieDescription.Text = "    " + movie.Plot;
-        SelectedMovieRating.Text = "Rated " + movie.Rated;
-        SelectedMovieDuration.Text = "Runtime: " + movie.Runtime;
-        SelectedMovieDirectors.Text = "Directors: " + movie.Director;
-        SelectedMovieActors.Text = "Actors: " + movie.Actors;
-        SelectedMovieWriters.Text = "Writers: " + movie.Writer;
-        SelectedMovieBoxOffice.Text = "Box Office: " + movie.BoxOffice;
-        SelectedMovieProduction.Text = "Production: " + movie.Production;
-        SelectedMovieMetascore.Text = "Metascore: " + movie.Metascore + "/100";
-        SelectedMovieImdbRating.Text = "IMDb Rating: " + movie.imdbRating + "/10  - Votes " + movie.imdbVotes;
+        SelectedMovieDescription.Text = "    " + movie.GetMoviePlotString();
+        SelectedMovieSubtitle.Text = movie.GetSubtitleString();
+
+        PopulateCeditsPanel(movie);
+        PopulateDetailsPanel(movie);
 
         // youtube details
-        SelectedMovieYTDescription.Text = $"'{movie.YTDescription}'";
         SelectedMovieChannelTitle.Text = "Posted by: " + movie.YTChannelTitle;
         SelectedMovieYTVideoPublishedAt.Text = "Posted on: " + movie.YTVideoPublishedAt;
         SelectedMovieYTVideoId.Text = $"Youtube Video Id: " + movie.YTVideoId;
         SelectedMovieYTVideoURL.NavigateUri = new Uri(movie.YTVideoURL);
 
-        if (DataService.Instance.MoviePosters.Count == 0) DataService.Instance.LoadPosters();
-        var poster = DataService.Instance.MoviePosters.FirstOrDefault(p => p.YTVideoid == movie.YTVideoId);
-        if (poster != null)
+        SelectedMovieImage.Source = await LoadPoster(movie);
+
+        // the Fultzy Meter
+        var rating = movie.GetRatingNormalized();
+        FultzyMeterValue.Content = rating + "/10";
+
+        FultzyMeterValue.Foreground = movie.GetFultzyMeterColor(rating);
+        FultzyMeterLabel.Foreground = movie.GetFultzyMeterColor(rating);
+    }
+
+    private void PopulateCeditsPanel(Movie movie)
+    {
+        CreditsStackPanel.Children.Clear();
+        if (!string.IsNullOrEmpty(movie.Actors))
         {
-            SelectedMovieImage.Source = poster.Image;
+            var actorsTextBlock = new TextBlock
+            {
+                Text = "Actors: " + movie.Actors,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            CreditsStackPanel.Children.Add(actorsTextBlock);
         }
-        else
+
+        if (!string.IsNullOrEmpty(movie.Director))
         {
-            try
+            var directorTextBlock = new TextBlock
             {
+                Text = "Directors: " + movie.Director,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            CreditsStackPanel.Children.Add(directorTextBlock);
+        }
 
-
-            }
-            catch
+        if (!string.IsNullOrEmpty(movie.Writer))
+        {
+            var writersTextBlock = new TextBlock
             {
-                SelectedMovieImage.Source = new BitmapImage(new Uri("/Resources/MissingImage.png", UriKind.Relative));
-            }
+                Text = "Writers: " + movie.Writer,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            CreditsStackPanel.Children.Add(writersTextBlock);
         }
     }
+
+    private void PopulateDetailsPanel(Movie movie)
+    {
+        DetailsStackPanel.Children.Clear();
+        if (!string.IsNullOrEmpty(movie.BoxOffice))
+        {
+            var ratingsTextBlock = new TextBlock
+            {
+                Text = "Box Office: " + movie.BoxOffice,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            DetailsStackPanel.Children.Add(ratingsTextBlock);
+        }
+
+        if (!string.IsNullOrEmpty(movie.Production))
+        {
+            var boxOfficeTextBlock = new TextBlock
+            {
+                Text = "Production: " + movie.Production,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            DetailsStackPanel.Children.Add(boxOfficeTextBlock);
+        }
+
+        if (!string.IsNullOrEmpty(movie.Awards))
+        {
+            var awardsTextBlock = new TextBlock
+            {
+                Text = "Awards: " + movie.Awards,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            DetailsStackPanel.Children.Add(awardsTextBlock);
+        }
+
+        var ratingsString = movie.GetRatingsString();
+        if (!string.IsNullOrEmpty(ratingsString))
+        {
+            var ratingsTextBlock = new TextBlock
+            {
+                Text = "Ratings: " + ratingsString,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            DetailsStackPanel.Children.Add(ratingsTextBlock);
+        }
+
+    }
+
+    public async Task<BitmapImage> LoadPoster(Movie movie)
+    {
+        BitmapImage bitmap = new BitmapImage();
+        try
+        {
+            bitmap = await PosterService.Fetch(movie);
+        }
+        catch (Exception)
+        {
+            bitmap = new BitmapImage(new Uri("/Resources/MissingImage.png", UriKind.Relative));
+        }
+        return bitmap;
+    }
+
 
     public void ClearSelectedMovie()
     {
         SelectedMovie = null;
         SelectedMovieTitle.Text = "No Movie Selected";
-        SelectedMovieGenre.Text = "";
-        SelectedMovieReleaseDate.Text = "";
         SelectedMovieDescription.Text = "";
-        SelectedMovieRating.Text = "";
-        SelectedMovieDuration.Text = "";
-        SelectedMovieDirectors.Text = "";
-        SelectedMovieActors.Text = "";
-        SelectedMovieWriters.Text = "";
+        SelectedMovieSubtitle.Text = "";
         SelectedMovieImage.Source = new BitmapImage(new Uri("/Resources/MissingImage.png", UriKind.Relative));
+
+        SelectedMovieChannelTitle.Text = "";
+        SelectedMovieYTVideoPublishedAt.Text = "";
+        SelectedMovieYTVideoId.Text = "";
+        SelectedMovieYTVideoURL.NavigateUri = null;
+
+        CreditsStackPanel.Children.Clear();
+        DetailsStackPanel.Children.Clear();
     }
 
     // Suggestion Box Events
@@ -529,7 +630,8 @@ public partial class MainWindow : Window
     private async void ReloadOMbdDataButton_Click(object sender, RoutedEventArgs e)
     {
         DataService.Instance.LoadData();
-        foreach (var movie in DataService.Instance.UnpickedMoviesList)
+        var movies = DataService.Instance.UnpickedMoviesList;
+        foreach (var movie in movies)
         {
             await OMdbService.GetMovieDetailsAsync(movie);
         }
@@ -601,8 +703,8 @@ public partial class MainWindow : Window
         if (WindowState == WindowState.Minimized)
         {
             // Reduce idle memory usage
-            ClearMovies();
-            DataService.Instance.ClearCache();
+            //ClearMovies();
+            //DataService.Instance.ClearCache();
 
             Hide();
             TrayIcon?.ShowBalloonTip(2000);
@@ -617,7 +719,7 @@ public partial class MainWindow : Window
             LoadMovies();
 
             //LoadMovies();
-            DataService.Instance.LoadPosters();
+            //DataService.Instance.LoadPosters();
             DataService.Instance.LoadData();
             StoredWindowState = WindowState;
         }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using YouTubeMoviePicker.Models;
 using YouTubeMoviePicker.Properties;
+using YouTubeMoviePicker.Utility;
 
 namespace YouTubeMoviePicker.Services;
 public static class YouTubeService

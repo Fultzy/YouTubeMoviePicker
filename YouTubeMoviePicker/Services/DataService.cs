@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using YouTubeMoviePicker.Models;
 using YouTubeMoviePicker.Properties;
+using YouTubeMoviePicker.Utility;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace YouTubeMoviePicker.Services;
 
@@ -17,7 +19,7 @@ public class DataService
 {
     public List<Movie> UnpickedMoviesList = new List<Movie>();
     public List<Movie> PickedMoviesList = new List<Movie>();
-    public List<Poster> MoviePosters = new List<Poster>();
+    //public List<Poster> MoviePosters = new List<Poster>();
 
     public EventHandler<DataChangeArgs> DataChanged;
 
@@ -50,6 +52,12 @@ public class DataService
         }
         else
         {
+            var folder = Path.Combine(Environment.CurrentDirectory, "Data");
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
             Logger.MainLog("Creating New UnpickedMovies.json");
             File.Create(unpickedPath).Dispose();
         }
@@ -66,6 +74,12 @@ public class DataService
         }
         else
         {
+            var folder = Path.Combine(Environment.CurrentDirectory, "Data");
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
             Logger.MainLog("Creating New PickedMovies.json");
             File.Create(pickedPath).Dispose();
         }
@@ -85,14 +99,19 @@ public class DataService
         UnpickedMoviesList = UnpickedMoviesList.GroupBy(m => m.YTVideoId).Select(g => g.First()).ToList();
         PickedMoviesList = PickedMoviesList.GroupBy(m => m.YTVideoId).Select(g => g.First()).ToList();
 
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
         // Save UnpickedMovies to a json file
         var unpickedPath = Path.Combine(Environment.CurrentDirectory, "Data", "UnpickedMovies.json");
-        var unpickedJson = JsonSerializer.Serialize(UnpickedMoviesList);
-        File.WriteAllText(unpickedPath, unpickedJson);
+        var unpickedJson = JsonSerializer.Serialize(UnpickedMoviesList, options);
+        File.WriteAllText(unpickedPath, unpickedJson, Encoding.UTF8);
 
         // Save PickedMovies to a json file
         var pickedPath = Path.Combine(Environment.CurrentDirectory, "Data", "PickedMovies.json");
-        var pickedJson = JsonSerializer.Serialize(PickedMoviesList);
+        var pickedJson = JsonSerializer.Serialize(PickedMoviesList, options);
         File.WriteAllText(pickedPath, pickedJson, Encoding.UTF8);
 
         Logger.MainLog("== Saved Data ==", false);
@@ -103,7 +122,7 @@ public class DataService
     {
         UnpickedMoviesList.Clear();
         PickedMoviesList.Clear();
-        MoviePosters.Clear();
+        //MoviePosters.Clear();
     }
 
     public void LoadPosters()
@@ -133,7 +152,7 @@ public class DataService
                     Image = new BitmapImage(new Uri(file))
                 };
 
-               MoviePosters.Add(poster);
+               //MoviePosters.Add(poster);
             }
             catch (Exception)
             {
@@ -159,7 +178,7 @@ public class DataService
         }
 
         // Save the image to the directory
-        MoviePosters.Add(poster);
+        //MoviePosters.Add(poster);
         var fileName = $"{poster.YTVideoid}.png";
         var filePath = Path.Combine(imagesDirectory, fileName);
 
@@ -259,6 +278,31 @@ public class DataService
         SaveData();
         
         DataChanged?.Invoke(this, new DataChangeArgs()); // update UI
+    }
+
+    public void UpdateMovie(Movie movie)
+    {
+        var index = UnpickedMoviesList.FindIndex(m => m.YTVideoId == movie.YTVideoId);
+        if (index != -1)
+        {
+            UnpickedMoviesList[index] = movie;
+
+            Logger.MainLog($"Updated movie: {movie.Title}");
+        }
+    }
+
+    public void UpdateMovies(List<Movie> movies)
+    {
+        if (movies == null) return;
+
+        foreach (Movie movie in movies)
+        {
+            UpdateMovie(movie);
+        }
+        SaveData();
+
+        DataChanged?.Invoke(this, new DataChangeArgs()); // update UI
+
     }
 
     // Advanced

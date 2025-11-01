@@ -109,48 +109,73 @@
 
         <Image Height="40" Grid.Column="1" HorizontalAlignment="right" Source="/Resources/SettingsIcon.png" MouseDown="SettingsIcon_Clicked" />
         <Label x:Name="NextMovieHeaderLabel" Grid.Column="1" Grid.Row="0" Content="Next Movie:" Foreground="White" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        
+        <Grid Grid.Column="1" Margin="0,0,50,0" HorizontalAlignment="Right">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF136503" Offset="0"/>
+                    <GradientStop Color="#005B5B5B" Offset="0.934"/>
+                    <GradientStop Color="#1454565D" Offset="0.737"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Label x:Name="FultzyMeterValue" Content="0/10" Foreground="Gray"  FontSize="24" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" FontFamily="Broadway"/>
+            <Label x:Name="FultzyMeterLabel" Content="Fultzy Meter" Foreground="Gray" FontSize="10" HorizontalAlignment="Center" Margin="0,25,0,0" VerticalAlignment="Bottom" FontFamily="Bahnschrift Light Condensed"/>
+        </Grid>
 
         <Canvas Grid.Row="2" Grid.Column="1"  Background="#A5313131" Margin="0,0,10,10"/>
-        <Label x:Name="TimeToPostLabel" Grid.Column="1" Grid.Row="2" Content="Time to Next Post" Margin="10,10,10,15" Foreground="White" FontSize="16" VerticalAlignment="bottom" HorizontalAlignment="left"/>
-        <Button x:Name="PostNowButton" Click="PostNowButton_Click" Content="Post Now" Grid.Column="1" Grid.Row="2" Margin="10,10,15,15" Background="#FF135171" Foreground="White" FontSize="16" HorizontalAlignment="Right" Padding="5,5,5,5" VerticalAlignment="Bottom"/>
+
+        <Label x:Name="TimeToPostLabel" Grid.Column="1" Grid.Row="2" Content="Time to Next Post" Margin="10,0,15,0" Foreground="White" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="left"/>
+        
+        <Button x:Name="PostNowButton" Click="PostNowButton_Click" Content="Post Now" Grid.Column="1" Grid.Row="2" Margin="10,0,15,0" Background="#FF135171" Foreground="White" FontSize="16" HorizontalAlignment="Right" Padding="5,5,5,5" VerticalAlignment="Top"/>
 
         <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Hidden" Grid.ColumnSpan="2" >
             <StackPanel Margin="0,0,25
                         ,0">
-                <TextBlock x:Name="SelectedMovieTitle" d:Text="Movie Title" Foreground="White" FontSize="24" HorizontalAlignment="Center" TextWrapping="Wrap" FontWeight="Bold"/>
-                <Image x:Name="SelectedMovieImage" MaxHeight="300" Source="/Resources/MissingImage.png"/>
-                <TextBlock x:Name="SelectedMovieRating" d:Text="Rating" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap" FontStyle="Italic"/>
-                <TextBlock x:Name="SelectedMovieGenre" d:Text="Genres" Foreground="White" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock  Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap">
+                
+                <TextBlock x:Name="SelectedMovieTitle" d:Text="Movie Title" Foreground="White" FontSize="32" TextWrapping="Wrap" FontWeight="Bold" Margin="40,0,0,0"/>
+                
+                <TextBlock x:Name="SelectedMovieSubtitle" d:Text="Subtitle" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap" FontStyle="Italic" Margin="25,2,25,2"/>
+                <TextBlock  Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap" Margin="25,2,25,2">
                     <Hyperlink x:Name="SelectedMovieYTVideoURL" NavigateUri="https://www.youtube.com/watch?v=0" RequestNavigate="Hyperlink_RequestNavigate">YouTube Video Link</Hyperlink>
                 </TextBlock>
 
-                <Separator Height="9" Margin="25,2,50,2"/>
+                <Separator Height="9" Margin="25,2,25,2"/>
 
-                <TextBlock x:Name="SelectedMovieDescription" d:Text="Movie Description" Foreground="White" FontSize="16" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <TextBlock x:Name="SelectedMovieDescription" d:Text="Movie Description" Foreground="White" FontSize="16" TextWrapping="Wrap" Margin="25,2,25,2" />
 
-                <TextBlock x:Name="SelectedMovieActors" d:Text="Actors" Foreground="White" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieDirectors" d:Text="Directors" Foreground="White" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieWriters" d:Text="Writers" Foreground="White" FontSize="14" TextWrapping="Wrap"/>
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    
+                    <Image x:Name="SelectedMovieImage" MaxHeight="300" Source="/Resources/MissingImage.png" Margin="10,0,0,0"/>
 
-                <Separator Height="9" Margin="25,2,50,2"/>
+                    <StackPanel HorizontalAlignment="Stretch" MaxWidth="1000" MinWidth="60">
+                        <StackPanel 
+                            x:Name="CreditsStackPanel"
+                            Margin="25,2,25,2"
+                            >
+                            <!-- Populated via script -->
+                        </StackPanel>
 
-                <TextBlock x:Name="SelectedMovieDuration" d:Text="Duration" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieReleaseDate" d:Text="Release Date" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieBoxOffice" d:Text="BoxOffice" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieProduction" d:Text="Production" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieMetascore" d:Text="Metascore" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieImdbRating" d:Text="IMdb Rating" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
+                        <Separator Height="9" Margin="25,2,25,2"/>
+                        <StackPanel 
+                            x:Name="DetailsStackPanel"
+                            Margin="25,2,25,2"
+                            >
+                            <!-- Populated via script -->
+                        </StackPanel>
 
-                <Separator Height="9" Margin="25,2,50,2"/>
 
-                <Label Content="YouTube Details" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
-                <TextBlock x:Name="SelectedMovieYTDescription" d:Text="Youtube Movie Description" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieChannelTitle" d:Text="Channel Title" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieYTVideoPublishedAt" d:Text="YTVideoPublishedAt" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-                <TextBlock x:Name="SelectedMovieYTVideoId" d:Text="YTVideoId" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap"/>
-               
+                        <Separator Height="9" Margin="25,2,50,2"/>
+
+                        <Label Content="YouTube Details" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+                        <TextBlock x:Name="SelectedMovieChannelTitle" d:Text="Channel Title" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap" Margin="25,2,25,2"/>
+                        <TextBlock x:Name="SelectedMovieYTVideoPublishedAt" d:Text="YTVideoPublishedAt" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap" Margin="25,2,25,2"/>
+                        <TextBlock x:Name="SelectedMovieYTVideoId" d:Text="YTVideoId" Foreground="#FFC1C1C1" FontSize="14" TextWrapping="Wrap" Margin="25,2,25,2"/>
+                    </StackPanel>
+                    
+
+                </StackPanel>
             </StackPanel>
+                
         </ScrollViewer>
 
         <Button x:Name="ReloadOMbdDataButton" Click="ReloadOMbdDataButton_Click" Content="Reload OMdb Data" Grid.Column="0" Grid.Row="2" Margin="0,0,38,5" Background="#FF135171" Foreground="White" FontSize="16" HorizontalAlignment="Right" Padding="5,5,5,5" VerticalAlignment="Bottom"/>

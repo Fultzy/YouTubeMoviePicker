@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace YouTubeMoviePicker.Services;
+namespace YouTubeMoviePicker.Utility;
 
 public static class Logger
 {
@@ -68,7 +68,10 @@ public static class Logger
 
     private static void CheckLogFile(string filepath)
     {
-        if (!File.Exists(filepath)) return;
+        if (!File.Exists(filepath))
+        {
+            Directory.CreateDirectory(filepath);
+        }
 
         // If the log file size is larger than 10 MB, archive it
         var fileInfo = new FileInfo(filepath);

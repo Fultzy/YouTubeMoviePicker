@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YouTubeMoviePicker.Services;
+namespace YouTubeMoviePicker.Utility;
 
 public static class Validator
 {
@@ -46,7 +46,7 @@ public static class Validator
 
         if (string.IsNullOrWhiteSpace(webHook))
         {
-            result = "Slack WebHook Cannot Be Blank,\nOtherwise Disable it";
+            result = "Slack WebHook Cannot Be Blank\nOtherwise Disable it";
         }
 
         return result;
@@ -82,8 +82,6 @@ public static class Validator
             result = "Discord WebHook Must Contain 'https://discord.com/api/webhooks/' or 'https://discordapp.com/api/webhooks/'";
         }
 
-        // to the loser that found my testing webhook, you're welcome. hope you had fun being racist to literally no one.
-
         if (webHook.Contains(' '))
         {
             result = "Discord WebHook Cannot Contain Spaces";
@@ -94,21 +92,31 @@ public static class Validator
             result = "Discord WebHook Cannot Be Blank,\nOtherwise Disable it";
         }
 
+        if (!webHook.StartsWith("https://"))
+        {
+            result = "Discord Webhook Must Start With 'https://'";
+        }
+
         return result;
     }
 
-    internal static string IsValidTeamsWebHook(string apiKey)
+    internal static string IsValidTeamsWebHook(string webHook)
     {
         var result = "pass";
 
-        if (apiKey.Contains(' '))
+        if (webHook.Contains(' '))
         {
-            result = "Teams Api Key Cannot Contain Spaces";
+            result = "Teams Webhook Cannot Contain Spaces";
         }
 
-        if (string.IsNullOrWhiteSpace(apiKey))
+        if (string.IsNullOrWhiteSpace(webHook))
         {
-            result = "Teams Api Key Cannot Be Blank,\nOtherwise Disable it";
+            result = "Teams Webhook Cannot Be Blank,\nOtherwise Disable it";
+        }
+
+        if (!webHook.StartsWith("https://"))
+        {
+            result = "Teams Webhook Must Start With 'https://'";
         }
 
         return result;

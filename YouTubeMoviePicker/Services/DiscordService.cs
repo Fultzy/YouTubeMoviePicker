@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using YouTubeMoviePicker.Models;
 using YouTubeMoviePicker.Properties;
+using YouTubeMoviePicker.Utility;
 
 namespace YouTubeMoviePicker.Services;
 internal class DiscordService

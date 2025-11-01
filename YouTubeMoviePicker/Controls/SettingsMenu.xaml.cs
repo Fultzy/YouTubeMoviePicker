@@ -141,35 +141,35 @@ public partial class SettingsMenu : UserControl
 
     private bool SettingsAreValid()
     {
-        var ytApiResult = Services.Validator.IsValidYouTubeApiKey(YouTubeApiKeyTextBox.Text);
+        var ytApiResult = Utility.Validator.IsValidYouTubeApiKey(YouTubeApiKeyTextBox.Text);
         if (ytApiResult != "pass")
         {
             MessageBox.Show(ytApiResult, "Invalid API Key", MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
 
-        var slackWebHookResult = Services.Validator.IsValidSlackWebHook(SlackWebHookTextBox.Text);
+        var slackWebHookResult = Utility.Validator.IsValidSlackWebHook(SlackWebHookTextBox.Text);
         if (SlackWebHookCheckBox.IsChecked == true && slackWebHookResult != "pass")
         {
             MessageBox.Show(slackWebHookResult, "Invalid WebHook", MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
 
-        var teamsWebHookResult = Services.Validator.IsValidTeamsWebHook(TeamsWebHookTextBox.Text);
+        var teamsWebHookResult = Utility.Validator.IsValidTeamsWebHook(TeamsWebHookTextBox.Text);
         if (TeamsWebHookCheckBox.IsChecked == true && teamsWebHookResult != "pass")
         {
             MessageBox.Show(teamsWebHookResult, "Invalid WebHook", MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
 
-        var omdbApiResult = Services.Validator.IsValidOMdbApiKey(OMdbApiKeyTextBox.Text);
+        var omdbApiResult = Utility.Validator.IsValidOMdbApiKey(OMdbApiKeyTextBox.Text);
         if (omdbApiResult != "pass")
         {
             MessageBox.Show(omdbApiResult, "Invalid API Key", MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
 
-        var discordApiResult = Services.Validator.IsValidDiscordWebHook(DiscordWebHookTextBox.Text);
+        var discordApiResult = Utility.Validator.IsValidDiscordWebHook(DiscordWebHookTextBox.Text);
         if (DiscordWebHookCheckBox.IsChecked == true && discordApiResult != "pass")
         {
             MessageBox.Show(discordApiResult, "Invalid WebHook", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -204,7 +204,7 @@ public partial class SettingsMenu : UserControl
             return;
         }
 
-        if (Services.Validator.IsValidDiscordWebHook(DiscordWebHookTextBox.Text) == "pass")
+        if (Utility.Validator.IsValidDiscordWebHook(DiscordWebHookTextBox.Text) == "pass")
         {
             DiscordWebHookTextBox.Background = Brushes.LightGreen;
         }
@@ -221,7 +221,7 @@ public partial class SettingsMenu : UserControl
             SlackWebHookTextBox.Background = Brushes.White;
             return; 
         }
-        if (Services.Validator.IsValidSlackWebHook(SlackWebHookTextBox.Text) == "pass")
+        if (Utility.Validator.IsValidSlackWebHook(SlackWebHookTextBox.Text) == "pass")
         {
             SlackWebHookTextBox.Background = Brushes.LightGreen;
         }
@@ -238,7 +238,7 @@ public partial class SettingsMenu : UserControl
             TeamsWebHookTextBox.Background = Brushes.White;
             return;
         }
-        if (Services.Validator.IsValidTeamsWebHook(SlackWebHookTextBox.Text) == "pass")
+        if (Utility.Validator.IsValidTeamsWebHook(TeamsWebHookTextBox.Text) == "pass")
         {
             TeamsWebHookTextBox.Background = Brushes.LightGreen;
         }
@@ -250,7 +250,7 @@ public partial class SettingsMenu : UserControl
 
     private void OMdbApiKeyTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (Services.Validator.IsValidOMdbApiKey(OMdbApiKeyTextBox.Text) == "pass")
+        if (Utility.Validator.IsValidOMdbApiKey(OMdbApiKeyTextBox.Text) == "pass")
         {
             OMdbApiKeyTextBox.Background = Brushes.LightGreen;
         }
@@ -262,7 +262,7 @@ public partial class SettingsMenu : UserControl
 
     private void YouTubeApiKeyTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (Services.Validator.IsValidYouTubeApiKey(YouTubeApiKeyTextBox.Text) == "pass")
+        if (Utility.Validator.IsValidYouTubeApiKey(YouTubeApiKeyTextBox.Text) == "pass")
         {
             YouTubeApiKeyTextBox.Background = Brushes.LightGreen;
         }
@@ -383,7 +383,7 @@ public partial class SettingsMenu : UserControl
 
     private void ToggleStartup(bool enable)
     {
-        string appName = "YouTubeMoviePicker2.0";  // Application name or any identifier
+        string appName = "YouTubeMoviePicker2.0";
         string appPath = System.IO.Path.ChangeExtension(System.Reflection.Assembly.GetExecutingAssembly().Location, ".exe");
         string startupFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
         string shortcutPath = System.IO.Path.Combine(startupFolderPath, $"{appName}.lnk");

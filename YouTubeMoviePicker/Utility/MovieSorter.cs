@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YouTubeMoviePicker.Models;
+using YouTubeMoviePicker.Models.Extensions;
 using YouTubeMoviePicker.Properties;
 
-namespace YouTubeMoviePicker.Services
+namespace YouTubeMoviePicker.Utility
 {
     public class MovieSorter
     {
@@ -75,16 +76,14 @@ namespace YouTubeMoviePicker.Services
                 score += 1;  // Plot matches, lower score
             }
 
-            // TODO: why is this so complicated?
-            // increase score if matching and is highly rated
-            if (((movie.imdbRating != null && movie.imdbRating != "N/A") && Convert.ToDouble(movie.imdbRating) > 4.5) || ((movie.Metascore != null && movie.Metascore != "N/A") && Convert.ToInt32(movie.Metascore) > 40))
+            // increase score by averaged normalized rating
+            if (movie.Ratings != null)
             {
-                score += 2; // highly rated, medium-high score
+                score += movie.GetRatingNormalized();
             }
 
             return score;
         }
-
 
         public static List<Movie> SortMoviesByAverageRating(List<Movie> movies)
         {
@@ -92,7 +91,7 @@ namespace YouTubeMoviePicker.Services
             var scoredMovies = movies.Select(m => new
             {
                 Movie = m,
-                NormalizedAverageRating = GetNormalizedAverageRating(m)
+                NormalizedAverageRating = m.GetRatingNormalized()
             })
 
             .OrderByDescending(x => x.NormalizedAverageRating) // Sort by average rating (best first)
@@ -101,55 +100,6 @@ namespace YouTubeMoviePicker.Services
 
             Settings.Default.SortBy = "Best Rating";
             return scoredMovies;
-        }
-
-        private static double GetNormalizedAverageRating(Movie movie)
-        {
-            // Normalize the IMDB Rating to a 1-10 scale (if valid)
-            double normalizedImdb = GetNormalizedImdbRating(movie.imdbRating);
-
-            // Normalize Metascore from 1-100 to a 1-10 scale (if valid)
-            double normalizedMetascore = GetNormalizedMetascore(movie.Metascore);
-
-            // Handle the case where one of the ratings is missing
-            if (normalizedImdb == 0 && normalizedMetascore == 0)
-            {
-                return 0; // Both ratings are invalid, return 0
-            }
-
-            // If one is valid, use the valid rating only
-            if (normalizedImdb == 0)
-            {
-                return normalizedMetascore; // Only metascore is valid
-            }
-
-            if (normalizedMetascore == 0)
-            {
-                return normalizedImdb; // Only imdb rating is valid
-            }
-
-            // If both ratings are valid, calculate the average
-            return (normalizedImdb + normalizedMetascore) / 2;
-        }
-
-        private static double GetNormalizedImdbRating(string imdbRating)
-        {
-            // If the IMDB Rating is valid (not null or "N/A"), parse it to a double
-            if (!string.IsNullOrEmpty(imdbRating) && imdbRating != "N/A" && double.TryParse(imdbRating, out double parsedImdb))
-            {
-                return parsedImdb; // Return as is since it's already in the 1-10 range
-            }
-            return 0; // Treat invalid or missing IMDB Rating as 0
-        }
-
-        private static double GetNormalizedMetascore(string metascore)
-        {
-            // If the Metascore is valid (not null or "N/A"), parse it to an integer
-            if (!string.IsNullOrEmpty(metascore) && metascore != "N/A" && int.TryParse(metascore, out int parsedMetascore))
-            {
-                return parsedMetascore / 10.0; // Normalize to 1-10 range
-            }
-            return 0; // Treat invalid or missing Metascore as 0
         }
 
         internal static List<Movie> RandomizeMovies(List<Movie> unpickedMoviesList)

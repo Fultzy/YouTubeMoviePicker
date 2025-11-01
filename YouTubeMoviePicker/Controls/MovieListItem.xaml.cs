@@ -25,7 +25,6 @@ namespace YouTubeMoviePicker.Controls;
 public partial class MovieListItem : UserControl
 {
     public Movie Movie { get; set; }
-    public Poster Poster { get; set; }
 
     public EventHandler ItemClicked;
     public EventHandler ItemDoubleClicked;
@@ -52,21 +51,7 @@ public partial class MovieListItem : UserControl
 
     private void MovieListItem_Loaded(object sender, RoutedEventArgs e)
     {
-        // setup poster
-        Poster = FindImageInCache(Movie.YTVideoId);
-        if (Poster != null)
-        {
-            Thumbnail.Source = Poster.Image;
-        }
-        else
-        {
-            FetchMoviePoster(Movie);
-        }
-    }
-
-    public Poster FindImageInCache(string ytId)
-    {
-        return DataService.Instance.MoviePosters.FirstOrDefault(p => p.YTVideoid == ytId);
+        FetchMoviePoster(Movie);
     }
 
     public async void FetchMoviePoster(Movie movie)
@@ -74,75 +59,11 @@ public partial class MovieListItem : UserControl
         // prioritize Omdb poster over YouTube thumbnail
         try
         {
-            Poster = await Fetch(movie);
-            await Dispatcher.InvokeAsync(() => Thumbnail.Source = Poster.Image);
-            DataService.Instance.SavePoster(Poster);
+            Thumbnail.Source = await PosterService.Fetch(movie);
         }
         catch (Exception)
         {
             await Dispatcher.InvokeAsync(() => Thumbnail.Source = new BitmapImage(new Uri("/Resources/MissingImage.png", UriKind.Relative)));
-        }
-    }
-
-    private async Task<Poster> Fetch(Movie movie)
-    {
-        try
-        {
-            // try to fetch poster from omdb
-            var posterUri = new Uri(movie.Poster);
-            var httpClient = new HttpClient();
-            var stream = await httpClient.GetStreamAsync(posterUri);
-
-            var posterImage = new BitmapImage();
-
-            posterImage.BeginInit();
-            posterImage.StreamSource = stream;
-            posterImage.CacheOption = BitmapCacheOption.OnLoad;
-            posterImage.EndInit();
-
-            if (posterImage.Width == 1)
-            {
-                Logger.MainLog($"Poster image download Failed: {movie.YTVideoId} - {movie.Title}");
-            }
-
-            var poster = new Poster()
-            {
-                YTVideoid = movie.YTVideoId,
-                Url = movie.Poster,
-                Image = posterImage
-            };
-
-            return poster;
-        }
-        catch (Exception ex)
-        {
-            try
-            {
-                // try to fetch the poster from the YouTube thumbnail
-                var posterUri = new Uri(movie.YTVideoThumbnail);
-                var httpClient = new HttpClient();
-                var stream = await httpClient.GetStreamAsync(posterUri);
-                var posterImage = new BitmapImage();
-
-                posterImage.BeginInit();
-                posterImage.StreamSource = stream;
-                posterImage.CacheOption = BitmapCacheOption.OnLoad;
-                posterImage.EndInit();
-
-                var poster = new Poster()
-                {
-                    YTVideoid = movie.YTVideoId,
-                    Url = movie.YTVideoThumbnail,
-                    Image = posterImage
-                };
-
-                return poster;
-            }
-            catch (Exception ex2)
-            {
-                Logger.MainLog($"Error == Failed to fetch poster image:\n{movie.Poster}\n{ex}\n{movie.YTVideoThumbnail}\n{ex2}");
-                throw new Exception($"Error == Failed to fetch poster image:\n{movie.Poster}\n{movie.YTVideoThumbnail}\n {ex}\n{ex2}");
-            }
         }
     }
 

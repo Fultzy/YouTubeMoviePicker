@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using YouTubeMoviePicker.Properties;
+using YouTubeMoviePicker.Utility;
 
 namespace YouTubeMoviePicker.Services
 {

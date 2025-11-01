@@ -13,8 +13,7 @@
 - .NET 6.0 - (will prompt to install on first run)
 - an OMdb API Key
 - a YouTube API Key
-- a Discord WebHook URL (optional)
-- a Slack WebHook URL (optional)
+- a Discord WebHook, Slack WebHook and or Teams Webhook
 
 ## installation 
 
